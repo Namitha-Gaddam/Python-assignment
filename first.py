@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 def authenticate_gspread():
     # Load credentials from the JSON file provided by Google API Console
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('your_credentials.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name('https://docs.google.com/spreadsheets/d/1VwEbwH-UWAKRqD-34esuqyjIpgCvwGgk/edit#gid=478598190', scope)
     client = gspread.authorize(creds)
     return client
 
