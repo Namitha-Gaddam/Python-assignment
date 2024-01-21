@@ -1,0 +1,38 @@
+Name              Position        Date        Hours Worked
+Sparks KeWWeMh,   WFS000101,  2023-10-09,     8
+Sparks KeWWeMh,   WFS000101,  2023-10-09,     8
+Sparks KeWWeMh,   WFS000101,  2023-10-09,     8
+Sparks KeWWeMh,   WFS000101,  2023-10-09,     8
+Sparks KeWWeMh,   WFS000101,  2023-10-09,     8
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6 
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6 
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6
+REsaXiaWE XAis,   WFS000065,  2023-09-16,     6
+
+Employees who worked for 7 consecutive days:
+       Name            Position
+7   Sparks KeWWeMh,   WFS000101, 
+8   Sparks KeWWeMh,   WFS000101,  
+9   Sparks KeWWeMh,   WFS000101, 
+8   Sparks KeWWeMh,   WFS000101,  
+11  REsaXiaWE XAis,   WFS000065,
+12  REsaXiaWE XAis,   WFS000065,
+13  REsaXiaWE XAis,   WFS000065,
+
+Employees with less than 10 hours between shifts but greater than 1 hour:
+       Name             Position
+8  CaMaXaWE, CeghaW    WFS000153
+9  CaMaXaWE, CeghaW    WFS000153
+10 CaMaXaWE, CeghaW    WFS000153
+12 Xee XaCar           WFS000200
+14 Xee XaCar           WFS000200
+16 Xee XaCar           WFS000200
+        
+
+Employees who worked for more than 14 hours in a single shift:
+Empty DataFrame
+Columns: [Name, Position]
+Index: []
