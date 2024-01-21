@@ -1,45 +1,44 @@
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-from datetime import datetime, timedelta
 
-def authenticate_gspread():
-    # Load credentials from the JSON file provided by Google API Console
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('https://docs.google.com/spreadsheets/d/1VwEbwH-UWAKRqD-34esuqyjIpgCvwGgk/edit#gid=478598190', scope)
-    client = gspread.authorize(creds)
-    return client
+def analyze_excel_file(file_path):
+    # Load the Excel file into a pandas DataFrame
+    df = pd.read_excel(file_path, sheet_name='Sheet1')
 
-def analyze_google_sheets(https://docs.google.com/spreadsheets/d/1eRujNQYov-tZ8j9yvkah6lSzJOpNweMF/edit?usp=sharing&ouid=112202623045573667171&rtpof=true&sd=true):
-    client = authenticate_gspread()
+    # Sort the DataFrame by 'Name' and 'Date'
+    df.sort_values(by=['Name', 'Date'], inplace=True)
 
-    # Open the Google Sheets document
-    sheet = client.open_by_url(https://docs.google.com/spreadsheets/d/1eRujNQYov-tZ8j9yvkah6lSzJOpNweMF/edit?usp=sharing&ouid=112202623045573667171&rtpof=true&sd=true)
-    worksheet = sheet.get_worksheet(0)  # assuming data is in the first sheet
+    # Reset the index after sorting
+    df.reset_index(drop=True, inplace=True)
 
-    # Get all values from the sheet
-    values = worksheet.get_all_values()
+    # Function to check consecutive days worked
+    def consecutive_days_worked(row):
+        return all(df.loc[i, 'Date'] - df.loc[i - 1, 'Date'] == pd.Timedelta(days=1) for i in range(1, len(df)))
 
-    # Convert the data to a pandas DataFrame for easier manipulation
-    df = pd.DataFrame(values[1:], columns=values[0])
+    # Function to check time between shifts
+    def time_between_shifts(row):
+        return (row['Date'] - df.loc[row.name - 1, 'Date']).seconds / 3600 < 10 and \
+               (row['Date'] - df.loc[row.name - 1, 'Date']).seconds / 3600 > 1
 
-    for i in range(len(df) - 1):
-        start_time1 = datetime.strptime(df['Start Time'][i], "%H:%M")
-        end_time1 = datetime.strptime(df['End Time'][i], "%H:%M")
+    # Function to check hours worked in a single shift
+    def hours_in_single_shift(row):
+        return row['Hours Worked'] > 14
 
-        start_time2 = datetime.strptime(df['Start Time'][i + 1], "%H:%M")
-        end_time2 = datetime.strptime(df['End Time'][i + 1], "%H:%M")
+    # Apply the functions to create boolean masks
+    consecutive_mask = df.groupby('Name').apply(consecutive_days_worked).reset_index(level=0, drop=True)
+    time_between_shifts_mask = df.apply(time_between_shifts, axis=1)
+    hours_in_single_shift_mask = df.apply(hours_in_single_shift, axis=1)
 
-        # a) Worked for 7 consecutive days
-        if (end_time1 + timedelta(days=1)) == start_time2:
-            print(f"{df['Name'][i]} ({df['Position'][i]}) has worked for 7 consecutive days.")
+    # Print the results
+    print("Employees who have worked for 7 consecutive days:")
+    print(df[consecutive_mask][['Name', 'Position']])
 
-        # b) Less than 10 hours between shifts but greater than 1 hour
-        time_between_shifts = start_time2 - end_time1
-        if timedelta(hours=1) < time_between_shifts < timedelta(hours=10):
-            print(f"{df['Name'][i]} ({df['Position'][i]}) and {df['Name'][i + 1]} ({df['Position'][i + 1]}) have less than 10 hours between shifts but more than 1 hour.")
+    print("\nEmployees who have less than 10 hours of time between shifts but greater than 1 hour:")
+    print(df[time_between_shifts_mask][['Name', 'Position']])
 
-        # c) Worked for more than 14 hours in a single shift
-        if (end_time1 - start_time1) > timedelta(hours=14):
-            print(f"{df['Name'][i]} ({df['Position'][i]}) has worked for more than 14 hours in a single shift.")
+    print("\nEmployees who have worked for more than 14 hours in a single shift:")
+    print(df[hours_in_single_shift_mask][['Name', 'Position']])
 
+# Example usage
+file_path = r"C:\Users\namit\OneDrive\Desktop\Data.xlsx"
+analyze_excel_file(file_path)
+       
